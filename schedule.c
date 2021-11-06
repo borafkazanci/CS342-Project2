@@ -4,15 +4,15 @@
 #include <sys/time.h>
 #include <time.h>
 
-void fcfs_waiting_time(int processes[], int n, int burstTime[],int wait[],int turnAround[],int arrivalTime[]){
-  int timeSpan[n];
-  timeSpan[0] = arrivalTime[0];
+void fcfs_waiting_time(int brstNoArr[], int arrLen, int brstLenArr[],int wait[],int turnAround[],int arrvlTime[]){
+  int timeSpan[arrLen];
+  timeSpan[0] = arrvlTime[0];
   wait[0] = 0;
 
-  for(int i = 1; i < n; i++){
-    timeSpan[i] = timeSpan[i-1] + burstTime[i-1];
+  for(int i = 1; i < arrLen; i++){
+    timeSpan[i] = timeSpan[i-1] + brstLenArr[i-1];
 
-    wait[i] = timeSpan[i] - arrivalTime[i];
+    wait[i] = timeSpan[i] - arrvlTime[i];
 
     if(wait[i] < 0){
       wait[i] = 0;
@@ -20,25 +20,25 @@ void fcfs_waiting_time(int processes[], int n, int burstTime[],int wait[],int tu
   }
 }
 
-void fcfs_turn_around(int processes[],int n, int burstTime[],int wait[], int turnAround[]){
-  for(int i = 0; i < n; i++){
-    turnAround[i] = burstTime[i] + wait[i];     
+void fcfs_turn_around(int brstNoArr[],int arrLen, int brstLenArr[],int wait[], int turnAround[]){
+  for(int i = 0; i < arrLen; i++){
+    turnAround[i] = brstLenArr[i] + wait[i];     
   }
 }
 
-void fcfs(int processes[],int n, int burstTime[], int arrivalTime[]){
-  int turnAround[n];
-  int wait[n];
+void fcfs(int brstNoArr[],int arrLen, int brstLenArr[], int arrvlTime[]){
+  int turnAround[arrLen];
+  int wait[arrLen];
 
-	fcfs_waiting_time(processes,n,burstTime,wait,turnAround,arrivalTime);
-	fcfs_turn_around(processes,n,burstTime,wait,turnAround);
+	fcfs_waiting_time(brstNoArr,arrLen,brstLenArr,wait,turnAround,arrvlTime);
+	fcfs_turn_around(brstNoArr,arrLen,brstLenArr,wait,turnAround);
 
   int totalTurnAround = 0;
-  for(int i = 0; i < n; i++){
+  for(int i = 0; i < arrLen; i++){
     totalTurnAround += turnAround[i];
   }
 
-  float avgTurnAround = (float) totalTurnAround / (float) n;
+  float avgTurnAround = (float) totalTurnAround / (float) arrLen;
 
   printf("Avg TurnaroundTime: %.3f \n", avgTurnAround);
 }
@@ -95,14 +95,7 @@ int main(int argc, char** argv){
 			i, brstNoArr[i], arrvlTime[i], brstLenArr[i]);		
 	}
 	printf("\n\n\n");
-
-	// example code
-	int processes[] = {1,2,3};
-  int n = sizeof(processes) / sizeof(processes[0]);
-
-  int burstTime[] = {24,3,3};
-
-  int arrivaltime[] = {0,3,5};
-
-  fcfs(processes,n,burstTime,arrivaltime);
+	
+	// FCFS
+  fcfs(brstNoArr, arrLen, brstLenArr, arrvlTime);
 }
