@@ -19,28 +19,22 @@ void fcfs_waiting_time(int brstNoArr[], int arrLen, int brstLenArr[],int wait[],
     }
   }
 }
-
-void fcfs_turn_around(int brstNoArr[],int arrLen, int brstLenArr[],int wait[], int turnAround[]){
-  for(int i = 0; i < arrLen; i++){
-    turnAround[i] = brstLenArr[i] + wait[i];     
-  }
-}
-
 void fcfs(int brstNoArr[],int arrLen, int brstLenArr[], int arrvlTime[]){
   int turnAround[arrLen];
   int wait[arrLen];
 
 	fcfs_waiting_time(brstNoArr,arrLen,brstLenArr,wait,turnAround,arrvlTime);
-	fcfs_turn_around(brstNoArr,arrLen,brstLenArr,wait,turnAround);
-
+	for(int i = 0; i < arrLen; i++){
+    turnAround[i] = brstLenArr[i] + wait[i];     
+    }
   int totalTurnAround = 0;
   for(int i = 0; i < arrLen; i++){
     totalTurnAround += turnAround[i];
   }
 
-  float avgTurnAround = (float) totalTurnAround / (float) arrLen;
+  float fcfsAvgTurnAround = (float) totalTurnAround / (float) arrLen;
 
-  printf("Avg TurnaroundTime: %.3f \n", avgTurnAround);
+  printf("Avg TurnaroundTime: %.3f \n", fcfsAvgTurnAround);
 }
 
 int main(int argc, char** argv){
