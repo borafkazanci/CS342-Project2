@@ -3,7 +3,131 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#include <math.h>
+#include <stdbool.h>
 
+typedef struct node{
+	int data;
+	int priority;
+	
+	struct node* next;
+} Node;
+
+Node* newNode(int d, int p){
+	Node* temp = (Node*) malloc(sizeof(Node));
+	temp -> data = d;
+	temp -> priority = p;
+	temp -> next = NULL;
+
+	return temp;
+}
+
+Node* pop(Node** head){
+	Node *temp = *head;
+	(*head) = (*head)->next;
+	return temp;
+} 
+
+void push(Node** head, int d, int p){
+	Node* start = (*head);
+
+	Node *temp = newNode(d,p);
+
+	if((*head) -> priority >p){
+		temp -> next = *head;
+		(*head) = temp;
+	}
+
+	else{
+		while(start->next != NULL && start->next->priority < p){
+			start = start->next;
+		}
+		temp->next = start->next;
+		start->next	= temp;
+	}
+}
+
+void rr(){
+
+}
+void srtf(int brstNoArr[],int arrLen, int brstLenArr[], int arrvlTime[], bool check[]){
+	int doneCount = 0;
+	int currentTime = 0;
+	int totalTA = 0;
+	Node *head = NULL;
+	while(doneCount != arrLen){
+		for(int i = 0; i < arrLen; i++){
+			if(currentTime >= arrvlTime[i] && check[i]){
+				if(head == NULL){
+					head = newNode(arrvlTime[i],brstLenArr[i]);
+					check[i] = false;
+				}
+				else{
+					push(&head,arrvlTime[i],brstLenArr[i]);
+					check[i] = false;
+				}	
+			}
+		}
+	if(head == NULL){
+		currentTime++;
+	}	
+	else{
+		Node* temp = pop(&head);
+		if(temp->priority != 1){
+			if(head == NULL){
+				head = newNode(temp->data,temp->priority-1);
+			}
+			else{
+				push(&head,temp->data,temp->priority-1);
+			}
+			currentTime++;
+			free(temp);
+		}
+		else{
+			currentTime++;
+			totalTA = totalTA + (currentTime - temp->data);
+			free(temp);
+			doneCount++;
+
+		}
+	}
+	}
+	double srtfAvgTurnAround = (double) totalTA / (double) arrLen;
+  	printf("SRTF: %d \n", (int) round(srtfAvgTurnAround));
+}
+void sjf(int brstNoArr[],int arrLen, int brstLenArr[], int arrvlTime[], bool check[]){
+	int doneCount = 0;
+	int currentTime = 0;
+	int totalTA = 0;
+	Node *head = NULL;
+	while(doneCount != arrLen){
+		for(int i = 0; i < arrLen; i++){
+			if(currentTime >= arrvlTime[i] && !check[i]){
+				if(head == NULL){
+					head = newNode(arrvlTime[i],brstLenArr[i]);
+					check[i] = true;
+				}
+				else{
+					push(&head,arrvlTime[i],brstLenArr[i]);
+					check[i] = true;
+				}	
+			}
+		}
+	if(head == NULL){
+		currentTime++;
+	}	
+	else{
+		Node* temp = pop(&head);
+		currentTime = currentTime + temp->priority;
+		totalTA = totalTA + (currentTime - temp->data);
+		free(temp);
+		doneCount++;
+	}
+	}
+
+	double sjfAvgTurnAround = (double) totalTA / (double) arrLen;
+  	printf("SJF: %d \n", (int) round(sjfAvgTurnAround));
+}
 void fcfs_waiting_time(int brstNoArr[], int arrLen, int brstLenArr[],int wait[],int turnAround[],int arrvlTime[]){
   int timeSpan[arrLen];
   timeSpan[0] = arrvlTime[0];
@@ -32,9 +156,9 @@ void fcfs(int brstNoArr[],int arrLen, int brstLenArr[], int arrvlTime[]){
     totalTurnAround += turnAround[i];
   }
 
-  float fcfsAvgTurnAround = (float) totalTurnAround / (float) arrLen;
+  double fcfsAvgTurnAround = (double) totalTurnAround / (double) arrLen;
 
-  printf("Avg TurnaroundTime: %.3f \n", fcfsAvgTurnAround);
+  printf("FCFS: %d \n", (int) round(fcfsAvgTurnAround));
 }
 
 int main(int argc, char** argv){
@@ -55,6 +179,7 @@ int main(int argc, char** argv){
 	int brstNoArr[arrLen];
 	int arrvlTime[arrLen];
 	int brstLenArr[arrLen];
+	bool checkArr[arrLen];
 
 	// second file read for arr items
 	FILE *sNewFile = fopen(argv[1], "r");
@@ -78,6 +203,8 @@ int main(int argc, char** argv){
 		newStr = strtok(NULL, " ");
 		brstLenArr[itemIndex] = atoi(newStr);
 
+		checkArr[itemIndex] = false;
+
 		itemIndex++;
 	}
   fclose(sNewFile);
@@ -92,4 +219,6 @@ int main(int argc, char** argv){
 	
 	// FCFS
   fcfs(brstNoArr, arrLen, brstLenArr, arrvlTime);
+  sjf(brstNoArr, arrLen, brstLenArr, arrvlTime, checkArr);
+  srtf(brstNoArr, arrLen, brstLenArr, arrvlTime, checkArr);
 }
