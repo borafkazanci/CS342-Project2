@@ -7,11 +7,41 @@
 #include <stdbool.h>
 
 typedef struct node{
-	int data;
-	int priority;
+	int data; //arrvTime
+	int priority; //burstTime
 	
 	struct node* next;
 } Node;
+
+Node* front = NULL, *rear = NULL;
+
+void enqueue(int arrv, int burst){
+	Node* newNode = malloc(sizeof(Node));
+	newNode->data = arrv;
+	newNode->priority = burst;
+	newNode->next = NULL;
+	
+	if(front == NULL || rear == NULL){
+		front = rear = newNode;
+	}
+	else{
+		rear->next = newNode;
+		rear = newNode;
+	}
+}
+
+Node* dequeue(){
+	Node* temp;
+	if(front != NULL){
+		temp = front;
+		front = front->next;
+		
+		if(front == NULL){
+			rear = NULL;
+		}
+	}
+	return temp;
+}
 
 Node* newNode(int d, int p){
 	Node* temp = (Node*) malloc(sizeof(Node));
@@ -47,59 +77,47 @@ void push(Node** head, int d, int p){
 	}
 }
 
-void rr_waiting_time(int brstNoArr[], int arrvlTime[], int brstLenArr[], 
-	  int arrLen, int quantum, int turnAround[], int wait[]){
-  
-  int tempBrstLen[arrLen];
-  for (int i = 0; i < arrLen; i++) {
-    tempBrstLen[i] = brstLenArr[i];
-  }
 
-  // int timeSpan[arrLen];
-  // timeSpan[0] = arrvlTime[0];
-  // wait[0] = 0;
-
-  int t = 0;
-  while(true){
-    bool check = true;
-
-    for (int i = 0; i < arrLen; i++){
-      if (tempBrstLen[i] > 0) {
-        check = false;
-
-        if (tempBrstLen[i] > quantum) {
-          t += quantum;
-          tempBrstLen[i] -= quantum;
-        }
-        else {
-          t += tempBrstLen[i];
-          wait[i] = t - brstLenArr[i];
-          tempBrstLen[i] = 0;
-        }
-      }
-    }
-
-    if (check == true) break;
-  }
+void rrHelper(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quantum, bool check[], int currentTime){
+	for(int i = 0; i < arrLen; i++){
+		if(currentTime >= arrvlTime[i] && !check[i]){
+			enqueue(arrvlTime[i],brstLenArr[i]);
+			check[i] = true;
+		}
+	}
 }
 
-void rr(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quantum){
-	int turnAround[arrLen];
-  int wait[arrLen];
-	int totalTurnAround = 0;
-
-	rr_waiting_time(brstNoArr, arrvlTime, brstLenArr, arrLen, quantum, turnAround, wait);
-	// turnaround time
-	for (int i = 0; i < arrLen; i++){
-		turnAround[i] = brstLenArr[i] + wait[i];
+void rr(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quantum, bool check[]){
+	int doneCount = 0;
+	int currentTime = 0;
+	int totalTA = 0;
+	while(doneCount != arrLen){
+		if(front == NULL){
+			rrHelper(brstNoArr,arrvlTime,brstLenArr,arrLen,quantum,check,currentTime);
+			currentTime++;
+		}
+		else{
+			Node* temp = dequeue();
+			int timeElapsed = temp->priority;
+			if(timeElapsed > quantum){
+				timeElapsed = quantum;
+			}
+			for(int j = 1; j <= timeElapsed; j++){
+				currentTime = currentTime + 1;
+				rrHelper(brstNoArr,arrvlTime,brstLenArr,arrLen,quantum,check,currentTime);
+			}	
+			if(temp->priority > quantum){
+				enqueue(temp->data,temp->priority - quantum);
+			}
+			else{
+				totalTA = currentTime - temp->data; 
+				free(temp);
+				doneCount++;
+			}
+		}
 	}
-
-  for (int i = 0; i < arrLen; i++){
-		totalTurnAround += turnAround[i];
-	}
-
-  double rrAvgTurnAround = (double) totalTurnAround /(double) arrLen;
-  printf("RR: %f \n", rrAvgTurnAround);
+	double rrAvgTurnAround = (double) totalTA / (double) arrLen;
+  	printf("RR: %d \n", (int) round(rrAvgTurnAround));
 }
 
 void srtf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool check[]){
@@ -145,7 +163,7 @@ void srtf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool c
 		}
 	}
 	double srtfAvgTurnAround = (double) totalTA / (double) arrLen;
-  printf("SRTF: %d \n", (int) round(srtfAvgTurnAround));
+  	printf("SRTF: %d \n", (int) round(srtfAvgTurnAround));
 }
 
 void sjf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool check[]){
@@ -276,5 +294,5 @@ int main(int argc, char** argv){
   fcfs(brstNoArr, arrvlTime, brstLenArr, arrLen);
   sjf(brstNoArr, arrvlTime, brstLenArr, arrLen, checkArr);
   srtf(brstNoArr, arrvlTime, brstLenArr, arrLen, checkArr);
-	rr(brstNoArr, arrvlTime, brstLenArr, arrLen, quantum);
+  rr(brstNoArr, arrvlTime, brstLenArr, arrLen, quantum, checkArr);
 }
