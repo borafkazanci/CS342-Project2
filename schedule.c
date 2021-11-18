@@ -31,7 +31,7 @@ void enqueue(int arrv, int burst){
 }
 
 Node* dequeue(){
-	Node* temp;
+	Node* temp = NULL;
 	if(front != NULL){
 		temp = front;
 		front = front->next;
@@ -78,11 +78,17 @@ void push(Node** head, int d, int p){
 }
 
 
-void rrHelper(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quantum, bool check[], int currentTime){
+void rrHelper(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quantum, bool check[], int currentTime, bool flag){
 	for(int i = 0; i < arrLen; i++){
 		if(currentTime >= arrvlTime[i] && !check[i]){
+			if(flag){
+			enqueue(arrvlTime[i],brstLenArr[i]-1);
+			check[i] = true;
+			}
+			else{
 			enqueue(arrvlTime[i],brstLenArr[i]);
 			check[i] = true;
+			}
 		}
 	}
 }
@@ -93,7 +99,7 @@ void rr(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quan
 	int totalTA = 0;
 	while(doneCount != arrLen){
 		if(front == NULL){
-			rrHelper(brstNoArr,arrvlTime,brstLenArr,arrLen,quantum,check,currentTime);
+			rrHelper(brstNoArr,arrvlTime,brstLenArr,arrLen,quantum,check,currentTime, true);
 			currentTime++;
 		}
 		else{
@@ -103,14 +109,14 @@ void rr(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quan
 				timeElapsed = quantum;
 			}
 			for(int j = 1; j <= timeElapsed; j++){
+				rrHelper(brstNoArr,arrvlTime,brstLenArr,arrLen,quantum,check,currentTime,false);
 				currentTime = currentTime + 1;
-				rrHelper(brstNoArr,arrvlTime,brstLenArr,arrLen,quantum,check,currentTime);
 			}	
 			if(temp->priority > quantum){
-				enqueue(temp->data,temp->priority - quantum);
+				enqueue(temp->data,temp->priority-quantum);
 			}
 			else{
-				totalTA = currentTime - temp->data; 
+				totalTA = totalTA + currentTime - temp->data; 
 				free(temp);
 				doneCount++;
 			}
