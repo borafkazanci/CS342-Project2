@@ -122,8 +122,8 @@ void rr(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quan
 			}
 		}
 	}
-	double rrAvgTurnAround = (double) totalTA / (double) arrLen;
-  	printf("RR: %d \n", (int) round(rrAvgTurnAround));
+	float rrAvgTurnAround = (float) totalTA / (float) arrLen;
+  printf("RR: %f \n", rrAvgTurnAround);
 }
 
 void srtf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool check[]){
@@ -168,8 +168,8 @@ void srtf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool c
 			}
 		}
 	}
-	double srtfAvgTurnAround = (double) totalTA / (double) arrLen;
-  	printf("SRTF: %d \n", (int) round(srtfAvgTurnAround));
+	float srtfAvgTurnAround = (float) totalTA / (float) arrLen;
+  printf("SRTF: %f \n", srtfAvgTurnAround);
 }
 
 void sjf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool check[]){
@@ -201,8 +201,8 @@ void sjf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool ch
 			doneCount++;
 		}
 	}
-	double sjfAvgTurnAround = (double) totalTA / (double) arrLen;
-  printf("SJF: %d \n", (int) round(sjfAvgTurnAround));
+	float sjfAvgTurnAround = (float) totalTA / (float) arrLen;
+  printf("SJF: %f \n", sjfAvgTurnAround);
 }
 
 void fcfs_waiting_time(int brstNoArr[], int arrLen, int brstLenArr[],int wait[],int turnAround[],int arrvlTime[]){
@@ -234,8 +234,8 @@ void fcfs(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen){
     totalTurnAround += turnAround[i];
   }
 
-  double fcfsAvgTurnAround = (double) totalTurnAround / (double) arrLen;
-  printf("FCFS: %d \n", (int) round(fcfsAvgTurnAround));
+  float fcfsAvgTurnAround = (float) totalTurnAround / (float) arrLen;
+  printf("FCFS: %f \n", fcfsAvgTurnAround);
 }
 
 int main(int argc, char** argv){
