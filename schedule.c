@@ -122,8 +122,8 @@ void rr(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, int quan
 			}
 		}
 	}
-	float rrAvgTurnAround = (float) totalTA / (float) arrLen;
-  printf("RR: %f \n", rrAvgTurnAround);
+	double rrAvgTurnAround = (double) (totalTA) / (double) arrLen;
+  printf("  RR => Avg Turnaround Time: %d \n", (int) round(rrAvgTurnAround));
 }
 
 void srtf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool check[]){
@@ -168,12 +168,12 @@ void srtf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool c
 			}
 		}
 	}
-	float srtfAvgTurnAround = (float) totalTA / (float) arrLen;
-  printf("SRTF: %f \n", srtfAvgTurnAround);
+	double srtfAvgTurnAround = (double) totalTA / (double) arrLen;
+  printf("  SRTF => Avg Turnaround Time: %d \n", (int) round(srtfAvgTurnAround));
 }
 
 void sjf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool check[]){
-	int doneCount = 0;
+  int doneCount = 0;
 	int currentTime = 0;
 	int totalTA = 0;
 	Node *head = NULL;
@@ -201,8 +201,8 @@ void sjf(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen, bool ch
 			doneCount++;
 		}
 	}
-	float sjfAvgTurnAround = (float) totalTA / (float) arrLen;
-  printf("SJF: %f \n", sjfAvgTurnAround);
+	double sjfAvgTurnAround = (double) totalTA / (double) arrLen;
+  printf("  SJF => Avg Turnaround Time: %d \n", (int) round(sjfAvgTurnAround));
 }
 
 void fcfs_waiting_time(int brstNoArr[], int arrLen, int brstLenArr[],int wait[],int turnAround[],int arrvlTime[]){
@@ -234,8 +234,8 @@ void fcfs(int brstNoArr[], int arrvlTime[], int brstLenArr[], int arrLen){
     totalTurnAround += turnAround[i];
   }
 
-  float fcfsAvgTurnAround = (float) totalTurnAround / (float) arrLen;
-  printf("FCFS: %f \n", fcfsAvgTurnAround);
+  double fcfsAvgTurnAround = (double) totalTurnAround / (double) arrLen;
+  printf("  FCFS => Avg Turnaround Time: %d \n", (int) round(fcfsAvgTurnAround));
 }
 
 int main(int argc, char** argv){
@@ -289,12 +289,7 @@ int main(int argc, char** argv){
 	int quantum = atoi(argv[2]);
 
 	// control
-	printf("File Control, Herkes fileini atsin!\n");
-	for (int i = 0; i < arrLen; i++){
-		printf("Arr index: %d => Burst no: %d - Arrival T: %d - Burst Length: %d\n", 
-			i, brstNoArr[i], arrvlTime[i], brstLenArr[i]);		
-	}
-	printf("%d\n\n\n", quantum);
+	printf("\nquantum: %d\n\nAverage Turnaround Times of Algorithms: \n\n", quantum);
 	
 	// Algorithm Calls
   fcfs(brstNoArr, arrvlTime, brstLenArr, arrLen);
